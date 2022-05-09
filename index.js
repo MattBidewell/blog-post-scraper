@@ -40,6 +40,7 @@ function getUsername(req) {
 
 async function handleRequest(req, res) {
   try {
+    console.log("req! " + req);
     // should catch any requests I'm not expecting...
     if (!req.url.startsWith("/?username=")) {
       res.writeHead(404).end();
