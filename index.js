@@ -1,14 +1,13 @@
+import * as http from "http";
+import * as crypto from "crypto";
 import { getMediumPosts } from "medium-articles";
 
 const username = "mattbidewell";
+const port = 3001;
+const tempUrl = "https://ignoreme.com"
 
-async function getPosts() {
-  const data = await getMediumPosts(username);
-  return data;
-}
-
-async function run() {
-  const postsData = await getPosts();
+async function getPosts(username) {
+  const postsData = await getMediumPosts(username);
 
   const formattedPosts = postsData.posts.map((post) => {
     const title = post.title;
@@ -28,6 +27,55 @@ async function run() {
   return formattedPosts;
 }
 
-run()
-  .then((posts) => console.log(posts))
-  .catch((err) => console.err(err));
+function getUsername(req) {
+  const url = new URL(tempUrl + req.url);
+  const params = url.searchParams;
+  const username = params.get("username");
+  if (username) {
+    return username;
+  } else {
+    throw new Error('username not found in req', req);
+  }
+}
+
+async function handleRequest(req, res) {
+  try {
+    // should catch any requests I'm not expecting...
+    if (!req.url.startsWith("/?username=")) {
+      res.writeHead(404).end();
+      return;
+    }
+
+    res.setHeader("Content-type", "application/json");
+    const username = getUsername(req);
+    const jsonResponse = await getPosts(username);
+    res.end(JSON.stringify(jsonResponse, null, 2));
+    return;
+  } catch (err) {
+    // catch all
+    const uid = crypto.randomUUID();
+    const errMessage = {
+      "error": "opps error, contact creator with the following URL and UID",
+      "url": req.url,
+      "uid": uid
+    }
+
+    const log = {
+      errorMessage: errMessage,
+      errorLog: err,
+      uid,
+    }
+    console.log(log)
+    res.end(JSON.stringify(errMessage, null, 2));
+  }
+}
+
+const server = http.createServer(handleRequest);
+
+server.listen(port, (err) => {
+  if (err) {
+    return console.log("Error: ", err);
+  }
+  console.log(`running on port ${port}`);
+});
+
