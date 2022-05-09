@@ -3,7 +3,7 @@ import * as crypto from "crypto";
 import { getMediumPosts } from "medium-articles";
 
 const username = "mattbidewell";
-const port = 3001;
+const port = 80;
 const tempUrl = "https://ignoreme.com"
 
 async function getPosts(username) {
