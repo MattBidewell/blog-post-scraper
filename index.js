@@ -3,7 +3,7 @@ import * as crypto from "crypto";
 import { getMediumPosts } from "medium-articles";
 
 const username = "mattbidewell";
-const port = 3000;
+const port = process.env.PORT || 3000; // heroku provides its own port.
 const tempUrl = "https://ignoreme.com"
 
 async function getPosts(username) {
