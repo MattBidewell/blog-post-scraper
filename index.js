@@ -4,7 +4,7 @@ import { getMediumPosts } from "medium-articles";
 
 const username = "mattbidewell";
 const port = process.env.PORT || 3000; // heroku provides its own port.
-const tempUrl = "https://ignoreme.com"
+const tempUrl = "https://ignoreme.com"; // this is SO hacky, but I couldnt be be bothered to find a nicer way just yet...
 
 async function getPosts(username) {
   const postsData = await getMediumPosts(username);
